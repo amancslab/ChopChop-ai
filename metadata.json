@@ -1,6 +1,8 @@
 {
   "name": "ShortsForge - AI YouTube to Shorts Repurposer",
-  "description": "Production-ready open-source pipeline repurposing long-form YouTube videos into vertical 9:16 Shorts with dynamic word-level Whisper subtitles and FFmpeg.",
+  "description": "Turn fat videos into viral Shorts in 1 chop.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

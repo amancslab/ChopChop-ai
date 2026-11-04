@@ -1,92 +1,127 @@
-import React from 'react';
-import { Film, Code2, Terminal, FileCode, Sparkles, Cpu } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Scissors, Key, LogOut, ShieldCheck } from 'lucide-react';
+import { UserProfile } from '../types';
 
 interface NavbarProps {
-  activeTab: 'studio' | 'ass' | 'code' | 'deploy';
-  setActiveTab: (tab: 'studio' | 'ass' | 'code' | 'deploy') => void;
+  user: UserProfile;
+  onSignOut: () => void;
+  geminiKey: string;
+  onOpenKeyModal: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  user,
+  onSignOut,
+  geminiKey,
+  onOpenKeyModal,
+}) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Fetch avatar image based on Gmail account
+  const userEmail = user.email || 'mauryaaman2000@gmail.com';
+  const gmailAvatarUrl = `https://unavatar.io/${encodeURIComponent(userEmail)}?fallback=https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'Aman+Maurya')}&background=10B981&color=fff&rounded=true&bold=true`;
+
   return (
-    <header className="sticky top-0 z-50 border-b border-neutral-800/80 bg-neutral-950/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-[#243049] bg-[#0B0F19]/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo & Brand */}
+          {/* Brand Wordmark (Clean, without "/ razor-cut") */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 via-rose-600 to-amber-500 flex items-center justify-center shadow-lg shadow-red-500/20 ring-1 ring-white/20">
-              <Film className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#161F30] to-[#0B0F19] border border-[#243049] flex items-center justify-center shadow-lg shadow-black/40 group relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#10B981]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Scissors className="w-4 h-4 text-[#10B981] transform -rotate-45" />
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                  ShortsForge
-                </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-wider">
-                  Open Source
-                </span>
-              </div>
-              <p className="text-xs text-neutral-400 hidden sm:block">
-                AI YouTube to 9:16 Shorts Repurposer
-              </p>
+
+            <div className="flex items-baseline space-x-1.5">
+              <span className="font-display text-lg font-black tracking-tight text-white">
+                ChopChop<span className="text-[#10B981]">.ai</span>
+              </span>
+            </div>
+
+            {/* Subtle Engine Status Pill */}
+            <div className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-[#161F30] border border-[#243049] text-[11px] font-mono text-neutral-300">
+              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+              <span>Engine: Ready</span>
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <nav className="flex items-center space-x-1 sm:space-x-2 bg-neutral-900/70 p-1 rounded-xl border border-neutral-800">
-            <button
-              onClick={() => setActiveTab('studio')}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === 'studio'
-                  ? 'bg-red-600 text-white shadow-md shadow-red-600/30'
-                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
-              }`}
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Studio & Simulator</span>
-            </button>
+          {/* Right Area: Circular Gmail Profile Icon (No Email text shown) */}
+          <div className="flex items-center space-x-3" ref={menuRef}>
+            {user.authenticated && (
+              <div className="relative">
+                <button
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  className="flex items-center focus:outline-none transition group"
+                  title="Google Account"
+                  aria-label="User profile menu"
+                >
+                  {/* Circular Gmail Profile Icon */}
+                  <div className="relative">
+                    <img
+                      src={gmailAvatarUrl}
+                      alt="Gmail Profile"
+                      referrerPolicy="no-referrer"
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-[#243049] group-hover:ring-[#10B981] shadow-lg shadow-black/50 transition-all duration-150"
+                      onError={(e) => {
+                        // Fallback to stylized initial if network issue
+                        const target = e.currentTarget;
+                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'A')}&background=10B981&color=fff&rounded=true&bold=true`;
+                      }}
+                    />
+                    <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#10B981] ring-2 ring-[#0B0F19]" />
+                  </div>
+                </button>
 
-            <button
-              onClick={() => setActiveTab('ass')}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === 'ass'
-                  ? 'bg-neutral-800 text-white border border-neutral-700'
-                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
-              }`}
-            >
-              <FileCode className="w-4 h-4" />
-              <span>ASS Subtitle Engine</span>
-            </button>
+                {/* Profile Dropdown Menu */}
+                {menuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 p-2 rounded-2xl bg-[#161F30] border border-[#243049] shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 space-y-1">
+                    <div className="px-3 py-2 border-b border-[#243049]/80">
+                      <div className="text-xs font-bold text-white font-display">
+                        {user.name || 'Google Account'}
+                      </div>
+                      <div className="text-[11px] text-[#10B981] font-mono flex items-center gap-1 mt-0.5">
+                        <ShieldCheck className="w-3 h-3" />
+                        <span>Google Sign-In Active</span>
+                      </div>
+                    </div>
 
-            <button
-              onClick={() => setActiveTab('code')}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === 'code'
-                  ? 'bg-neutral-800 text-white border border-neutral-700'
-                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
-              }`}
-            >
-              <Code2 className="w-4 h-4" />
-              <span>Deliverables & Code</span>
-            </button>
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false);
+                        onOpenKeyModal();
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-mono text-neutral-300 hover:text-white hover:bg-[#243049]/60 flex items-center space-x-2 transition"
+                    >
+                      <Key className="w-3.5 h-3.5 text-[#FACC15]" />
+                      <span>Gemini API Key (BYOK)</span>
+                    </button>
 
-            <button
-              onClick={() => setActiveTab('deploy')}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === 'deploy'
-                  ? 'bg-neutral-800 text-white border border-neutral-700'
-                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
-              }`}
-            >
-              <Terminal className="w-4 h-4" />
-              <span className="hidden sm:inline">Deployment Guide</span>
-              <span className="sm:hidden">Deploy</span>
-            </button>
-          </nav>
-
-          {/* Engine Pill */}
-          <div className="hidden lg:flex items-center space-x-2 text-xs font-mono text-neutral-400 bg-neutral-900/60 px-3 py-1.5 rounded-lg border border-neutral-800">
-            <Cpu className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-            <span>faster-whisper + ffmpeg</span>
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false);
+                        onSignOut();
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-mono text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center space-x-2 transition"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

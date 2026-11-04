@@ -1,1 +1,79 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-obsidian: #0b0f19;
+    --surface-charcoal: #161f30;
+    --surface-charcoal-elevated: #1e293b;
+    --border-subtle: #243049;
+    --border-hover: #35476b;
+    --blade-emerald: #10b981;
+    --blade-emerald-glow: rgba(16, 185, 129, 0.22);
+    --blade-red: #ff3366;
+    --caption-yellow: #facc15;
+  }
+
+  body {
+    background-color: var(--bg-obsidian);
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Typography Utility */
+.font-display {
+  font-family: 'Syne', 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Linear/Raycast Dark Canvas Texture */
+.linear-grid {
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+}
+
+/* Blade Slicing Glow Effect */
+@keyframes blade-slice {
+  0% {
+    transform: translateX(-100%) skewX(-20deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(200%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
+.animate-blade-slice {
+  animation: blade-slice 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #243049;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #35476b;
+}
