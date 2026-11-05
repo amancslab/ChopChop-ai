@@ -1,0 +1,1 @@
+"""ChopChop-ai Core Module"""

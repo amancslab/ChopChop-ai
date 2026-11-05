@@ -918,6 +918,7 @@ export const ChopStudio: React.FC<ChopStudioProps> = ({ geminiKey, onOpenKeyModa
                   onClick={() => setIsPlaying(!isPlaying)}
                   className="w-8 h-8 rounded-lg bg-[#10B981] hover:bg-[#059669] text-neutral-950 flex items-center justify-center transition"
                   title={isPlaying ? 'Pause Clip' : 'Play Clip'}
+                  aria-label={isPlaying ? 'Pause Clip' : 'Play Clip'}
                 >
                   {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />}
                 </button>

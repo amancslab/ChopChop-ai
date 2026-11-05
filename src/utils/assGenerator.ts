@@ -15,12 +15,13 @@ export const ASS_FONT_SIZES: Record<FontSizeChoice, { size: number; marginV: num
 
 export function formatAssTime(seconds: number): string {
   const safeSec = Math.max(0, seconds);
-  const hours = Math.floor(safeSec / 3600);
-  const rem = safeSec % 3600;
+  const totalCs = Math.round(safeSec * 100);
+  const cs = totalCs % 100;
+  const totalSecs = Math.floor(totalCs / 100);
+  const hours = Math.floor(totalSecs / 3600);
+  const rem = totalSecs % 3600;
   const minutes = Math.floor(rem / 60);
-  const secs = Math.floor(rem % 60);
-  let cs = Math.round((rem - Math.floor(rem)) * 100);
-  if (cs >= 100) cs = 99;
+  const secs = rem % 60;
   return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
 }
 

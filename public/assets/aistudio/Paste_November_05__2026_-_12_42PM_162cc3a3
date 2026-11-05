@@ -1,0 +1,1038 @@
+# PRINCIPAL ENGINEERING PROMPT
+# CHOPCHOP.AI — REPOSITORY AUDIT, TEST ENGINEERING, CI/CD AND QUALITY GOVERNANCE
+
+## ROLE
+
+Act as a Principal Software Architect, Staff Software Engineer, Principal QA Engineer, SDET, DevSecOps Engineer, CI/CD Architect and Application Security Engineer.
+
+You have 15+ years of experience designing and maintaining production-grade software systems.
+
+You are taking ownership of the technical quality of:
+
+Repository: https://github.com/amancslab/ChopChop-ai
+
+Default branch: main
+
+Your mission is to transform this repository into a maintainable, testable, secure and continuously validated software project.
+
+You must work from actual source code, not assumptions.
+
+This is not simply a request to add GitHub Actions YAML files. Build a complete engineering quality system.
+
+The final objective:
+
+**Every feature must have a testing strategy, acceptance criteria, implementation evidence, automated validation where appropriate, and a regression test before it can be merged into main.**
+
+---
+
+# PART 1 — REPOSITORY DISCOVERY
+
+Begin by inspecting the complete repository.
+
+Inspect:
+
+- Every directory.
+- Every source file.
+- Every dependency manifest.
+- Every application entry point.
+- Every integration.
+- Every utility.
+- Every environment variable.
+- Every build script.
+- Every deployment configuration.
+- Existing branches.
+- Existing commit history.
+- GitHub Actions configuration.
+- Existing tests.
+- Existing documentation.
+
+Pay particular attention to:
+
+- app.py
+- requirements.txt
+- packages.txt
+- package.json
+- package lockfiles, if present
+- tsconfig.json
+- vite.config.ts
+- src/App.tsx
+- src/components/
+- src/utils/youtube.ts
+- src/utils/assGenerator.ts
+- src/types.ts
+
+Inspect additional files as necessary.
+
+## Deliverable 1
+
+Create:
+
+`engineering/REPOSITORY_AUDIT.md`
+
+Document:
+
+1. Actual application architecture.
+2. Actual frontend entry point.
+3. Actual backend entry point.
+4. Existing API architecture.
+5. Dependency inventory.
+6. External service integrations.
+7. Configuration and secrets handling.
+8. Existing test infrastructure.
+9. Existing CI/CD.
+10. Architectural inconsistencies.
+11. Missing components.
+12. Technical debt.
+13. Security concerns.
+14. Reliability risks.
+15. Recommended engineering priorities.
+
+Do not assume the README accurately represents the current implementation.
+
+Explicitly resolve the React/Vite versus Streamlit/Python architecture discrepancy.
+
+Determine whether both applications are required, whether one is legacy, or whether the codebase contains disconnected implementations.
+
+Do not remove either implementation until its purpose and deployment dependencies are established.
+
+---
+
+# PART 2 — FEATURE INVENTORY AND REQUIREMENTS
+
+Create:
+
+`engineering/FEATURE_CATALOG.md`
+
+Identify every feature in the entire codebase.
+
+For every feature document:
+
+- Feature ID.
+- Feature name.
+- User story.
+- Expected behaviour.
+- Actual implementation.
+- Frontend component.
+- Backend function or endpoint.
+- Dependencies.
+- Required validations.
+- Failure behaviour.
+- Acceptance criteria.
+- Unit testing requirements.
+- Integration testing requirements.
+- E2E testing requirements.
+- Regression testing requirements.
+- Security considerations.
+
+Assign priorities:
+
+P0: Critical product and security functionality.
+
+P1: Core product workflows.
+
+P2: Supporting features.
+
+P3: Cosmetic improvements.
+
+Do not invent product features.
+
+---
+
+# PART 3 — INVESTIGATE EXISTING IMPLEMENTATION GAPS
+
+Investigate these initial concerns against the complete codebase.
+
+## 3.1 Authentication
+
+Inspect AuthGate.tsx, App.tsx and the Python authentication implementation.
+
+Determine:
+
+- Whether Google OAuth is real.
+- Whether authenticated users can be forged by changing frontend state.
+- Whether the backend validates identity.
+- Whether sessions are secure.
+- Whether logout invalidates the real session.
+- Whether any fixed user identity is present.
+- Whether user data leaks between sessions.
+
+Do not consider a frontend button that sets authenticated=true to be authentication.
+
+## 3.2 Gemini API integration
+
+Inspect all Gemini integrations.
+
+Determine:
+
+- Whether the frontend calls Gemini directly.
+- Whether the backend calls Gemini.
+- Which model identifiers are configured.
+- How API keys are stored.
+- Whether placeholder credentials exist.
+- Whether fallback responses are simulated.
+- Whether error handling is accurate.
+- Whether API limits are respected.
+
+Never expose a Gemini API key in the frontend production bundle.
+
+BYOK implementation must have a documented threat model and must not falsely claim that a client-side secret is protected from the client.
+
+## 3.3 Hook-generation implementation
+
+Investigate the difference between:
+
+- Actual transcript-based analysis.
+- Title-based Gemini prompts.
+- Hardcoded fallback templates.
+- Synthetic timestamps.
+- Actual generated subtitles.
+
+A hook must never be represented as transcript-verified unless it has been validated against source content.
+
+Test timestamps against actual video duration and transcript timing.
+
+## 3.4 Video preview
+
+Inspect actual media sources and preview state.
+
+Determine whether playback is:
+
+- Genuine source video playback.
+- Timestamp-based source playback.
+- Simulated playback.
+- A mock preview.
+
+Verify switching videos and hook cards does not introduce stale state.
+
+## 3.5 Video export
+
+Inspect the complete chain:
+
+Frontend → request → backend → yt-dlp → FFmpeg → Whisper → ASS generation → final MP4 → download.
+
+Determine which functions are connected and which are only simulated.
+
+Do not mark export complete when only a timer or progress indicator has finished.
+
+---
+
+# PART 4 — TEST ENGINEERING FOUNDATION
+
+Create a complete testing structure.
+
+Recommended structure:
+
+```text
+tests/
+├── frontend/
+│   ├── unit/
+│   ├── components/
+│   └── integration/
+├── backend/
+│   ├── unit/
+│   ├── integration/
+│   └── api/
+├── e2e/
+├── contracts/
+├── security/
+├── performance/
+├── media/
+├── fixtures/
+├── mocks/
+└── evaluations/
+```
+
+Select the test frameworks based on the real implementation.
+
+Possible tools:
+
+Python:
+- Pytest.
+- pytest-cov.
+- Ruff.
+- MyPy or Pyright where appropriate.
+- HTTPX.
+- FastAPI TestClient if applicable.
+
+Frontend:
+- Vitest.
+- React Testing Library.
+- Playwright.
+- TypeScript compiler.
+
+Security:
+- Bandit.
+- Semgrep.
+- Dependency auditing.
+- Trivy.
+- CodeQL where appropriate.
+
+Media:
+- FFmpeg.
+- FFprobe.
+- Synthetic video and audio fixtures.
+
+Do not add frameworks unnecessarily.
+
+Do not install huge machine-learning models in every CI job.
+
+Use mocking for external APIs and small reproducible fixtures.
+
+---
+
+# PART 5 — FEATURE DEVELOPMENT GATES
+
+Every new feature or bug fix must follow this engineering contract.
+
+## Before implementation
+
+The developer or coding agent must create:
+
+`engineering/features/FEATURE-ID.md`
+
+Include:
+
+1. Feature description.
+2. Problem being solved.
+3. Scope.
+4. Non-goals.
+5. User story.
+6. Expected behaviour.
+7. Acceptance criteria.
+8. Dependencies.
+9. Risks.
+10. Security implications.
+11. Test cases.
+12. Regression impact.
+
+## Before coding
+
+Review:
+
+- Existing architecture.
+- Related components.
+- Reusable utilities.
+- Data contracts.
+- Failure conditions.
+- Existing tests.
+- Test data.
+- Backward compatibility.
+
+## During implementation
+
+Follow:
+
+1. Test-first design for testable business logic.
+2. Small and focused changes.
+3. Typed contracts.
+4. Input validation.
+5. Explicit error handling.
+6. Structured logging.
+7. No sensitive information in logs.
+8. No hardcoded secrets.
+9. No fake success states.
+10. No unnecessary dependencies.
+
+Implement unit tests alongside business logic.
+
+## After implementation
+
+Execute, in order:
+
+1. Formatting.
+2. Linting.
+3. Type checks.
+4. Unit tests.
+5. Component tests.
+6. Integration tests.
+7. API tests.
+8. Contract tests.
+9. Relevant end-to-end tests.
+10. Security checks.
+11. Build.
+12. Regression tests.
+
+Every feature must have an explicit test result.
+
+A passing build does not prove that a feature works.
+
+---
+
+# PART 6 — PYTHON QUALITY GATES
+
+If Python is part of the supported application:
+
+Configure:
+
+- Ruff formatting.
+- Ruff linting.
+- Pytest.
+- Coverage reporting.
+- Appropriate static type checks.
+- Dependency security checks.
+
+Test important functions such as:
+
+- extract_youtube_video_id.
+- parse_time_to_seconds.
+- format_seconds_to_hms.
+- format_ass_time.
+- fetch_youtube_transcript.
+- detect_viral_segments_gemini.
+- download_youtube_segment.
+- convert_aspect_ratio_and_frame.
+- extract_audio_from_clip.
+- transcribe_audio_words.
+- generate_ass_subtitle_file.
+- burn_subtitles_into_video.
+- run_shorts_pipeline.
+
+Use dependency injection or mocks to isolate external tools.
+
+Do not contact YouTube, Gemini or download large models during ordinary unit tests.
+
+---
+
+# PART 7 — FRONTEND QUALITY GATES
+
+Configure:
+
+- TypeScript strictness review.
+- ESLint or equivalent linting.
+- Prettier or consistent formatting.
+- Vitest.
+- React Testing Library.
+- Playwright.
+
+Add tests for:
+
+- Application initialization.
+- Authentication gate.
+- User profile.
+- API key modal.
+- YouTube URL input.
+- Metadata fetching.
+- Preset selection.
+- Gemini hook generation.
+- Hook cards.
+- Custom timestamps.
+- Preview player.
+- Playback controls.
+- Subtitle display.
+- Aspect ratio controls.
+- Export workflow.
+- Download handling.
+- Error and retry states.
+- Responsive behaviour.
+
+Every interactive button must have a corresponding functional test.
+
+---
+
+# PART 8 — MEDIA PIPELINE QUALITY ENGINEERING
+
+Build deterministic tests for the actual media pipeline.
+
+Use small generated synthetic assets.
+
+Avoid dependence on copyrighted third-party source videos for routine CI.
+
+Verify:
+
+1. Source clip duration.
+2. Requested start time.
+3. Requested end time.
+4. Actual extracted duration.
+5. Correct output dimensions.
+6. Correct aspect ratio.
+7. Audio stream presence.
+8. Audio/video synchronization.
+9. Subtitle file validity.
+10. Subtitle timing.
+11. Subtitle burn-in.
+12. MP4 container validity.
+13. Correct output file.
+14. Temporary file cleanup.
+
+Use FFprobe to inspect output metadata.
+
+Use a decoded frame or frame comparison when visual output correctness needs to be established.
+
+Add tests for:
+
+- Missing FFmpeg.
+- Invalid source video.
+- Missing audio stream.
+- Empty transcription.
+- Invalid subtitle data.
+- Invalid aspect ratio.
+- Processing timeout.
+- Export failure.
+- Interrupted process.
+- Cleanup after failure.
+
+Keep ordinary CI media tests small and fast.
+
+Run expensive Whisper model integration tests in a separate scheduled or explicitly triggered workflow.
+
+---
+
+# PART 9 — API CONTRACT AND INTEGRATION TESTING
+
+If backend APIs exist, inventory them before selecting testing tools.
+
+Document:
+
+- Endpoints.
+- Methods.
+- Authentication.
+- Request schemas.
+- Response schemas.
+- Status codes.
+- Validation.
+- Error contracts.
+- Rate limiting.
+- Side effects.
+
+Test success, validation errors, timeouts, malformed responses and upstream failures.
+
+Ensure the frontend and backend use matching types and schemas.
+
+Where useful, introduce shared contracts or generated API types.
+
+Never silently accept incorrect upstream data.
+
+---
+
+# PART 10 — SECURITY ENGINEERING
+
+Implement non-destructive security validation.
+
+Check:
+
+- Authentication bypass.
+- Authorization defects.
+- Exposed API keys.
+- Exposed user information.
+- Cross-site scripting.
+- Injection.
+- Unsafe URL handling.
+- SSRF.
+- Command injection.
+- Unsafe file handling.
+- Path traversal.
+- Dependency vulnerabilities.
+- Untrusted transcript content.
+- Prompt injection.
+- Insecure temporary-file permissions.
+- Resource exhaustion.
+- Sensitive logging.
+- Insecure browser storage.
+
+Protect FFmpeg and yt-dlp process invocation.
+
+Use argument arrays rather than shell command interpolation.
+
+Restrict user-provided URLs to explicitly supported domains and validate redirects and resolved addresses where server-side fetching is involved.
+
+Never permit arbitrary user-supplied URLs to access internal network addresses.
+
+Do not test destructive attacks against production.
+
+Create:
+
+`engineering/SECURITY_POLICY.md`
+
+and:
+
+`engineering/THREAT_MODEL.md`
+
+---
+
+# PART 11 — LOCAL PRE-COMMIT PIPELINE
+
+Create a local quality gate using an appropriate hook manager such as pre-commit or Husky.
+
+Determine the actual supported tooling first.
+
+The local hook should run:
+
+- Whitespace and conflict-marker checks.
+- Relevant formatting checks.
+- Relevant lint checks.
+- Type checks.
+- Fast unit tests for affected components.
+- Secret scanning or staged-file checks.
+
+For a mixed Python/TypeScript repository, avoid forcing every unrelated test to run for every trivial change if that creates an unnecessarily slow developer experience.
+
+However, no code should receive a false PASS merely because a test was skipped.
+
+Use targeted tests locally and run the complete required suite in CI.
+
+Provide:
+
+- Installation instructions.
+- Hook configuration.
+- Bypass warning.
+- Troubleshooting instructions.
+
+Document that `--no-verify` can bypass local hooks and that CI is the authoritative enforcement mechanism.
+
+---
+
+# PART 12 — GITHUB ACTIONS CI PIPELINE
+
+Create:
+
+`.github/workflows/ci.yml`
+
+Use supported, pinned action versions and least-privilege permissions.
+
+Trigger on:
+
+- Pull request opened.
+- Pull request synchronized.
+- Pull request reopened.
+- Pull request ready for review.
+- Push to main.
+- Manual dispatch when useful.
+
+Use concurrency controls to cancel superseded PR runs safely.
+
+## Required CI jobs
+
+### Job 1: Repository policy
+
+Check:
+
+- Secret scanning.
+- Whitespace.
+- Merge conflicts.
+- Prohibited files.
+- Repository hygiene.
+
+### Job 2: Python quality
+
+Where Python is supported:
+
+- Set up supported Python version.
+- Install test dependencies.
+- Ruff lint.
+- Ruff format check.
+- Type checks.
+- Pytest.
+- Coverage artifact.
+
+### Job 3: Frontend quality
+
+Where frontend is supported:
+
+- Set up supported Node.js version.
+- Install with the committed lockfile.
+- TypeScript checks.
+- Lint.
+- Vitest.
+- Build.
+
+Use `npm ci` or the equivalent frozen-lockfile command.
+
+Do not permit an installation that silently regenerates or changes dependency lockfiles during CI.
+
+### Job 4: API and integration tests
+
+Test API contracts and actual internal service boundaries.
+
+Use local mocks and ephemeral services.
+
+### Job 5: Media pipeline tests
+
+Use synthetic source clips.
+
+Validate FFmpeg outputs with FFprobe.
+
+Do not download full YouTube videos or large Whisper models during normal pull request CI.
+
+### Job 6: Security
+
+Run dependency auditing and appropriate static analysis.
+
+Generate SARIF or machine-readable reports where supported.
+
+Do not expose sensitive scan results or credentials in public logs.
+
+### Job 7: End-to-end tests
+
+Run critical user workflows in an isolated application environment.
+
+Use mock Gemini and YouTube integrations.
+
+Include a separately triggered real-integration test only when authorized credentials are available.
+
+### Job 8: Final quality gate
+
+The final required job must depend on all applicable required jobs.
+
+It must fail if any mandatory job fails, is cancelled or is missing.
+
+Name this job consistently:
+
+`quality-gate`
+
+It must be suitable for use as a required GitHub status check.
+
+Make the job structure explicit. Do not use `continue-on-error` to conceal required test failures.
+
+---
+
+# PART 13 — GITHUB BRANCH GOVERNANCE
+
+Create:
+
+`engineering/BRANCH_PROTECTION_SETUP.md`
+
+Specify the recommended branch policy:
+
+- main is protected.
+- No direct pushes to main.
+- Pull requests are mandatory.
+- At least one approving review where team size permits.
+- Dismiss stale approvals when new changes are pushed.
+- Require approval of the latest reviewable push where supported.
+- Require `quality-gate` status check.
+- Require branch to be up to date where appropriate.
+- Require conversation resolution.
+- Restrict force pushes.
+- Restrict branch deletion.
+- Apply CODEOWNERS to sensitive areas.
+- Avoid bypass privileges except explicitly designated administrators.
+
+Important:
+
+A workflow file cannot by itself enforce branch protection.
+
+Use the GitHub repository ruleset or branch-protection configuration.
+
+Verify the actual setting after enabling it.
+
+If the account lacks the necessary permissions, document the precise manual setup required.
+
+Do not claim protection is active merely because documentation was created.
+
+---
+
+# PART 14 — DEPENDABOT AND SECURITY MAINTENANCE
+
+Create:
+
+`.github/dependabot.yml`
+
+Configure sensible update schedules for:
+
+- npm.
+- pip.
+- GitHub Actions.
+
+Use grouped updates for safe minor/patch dependency upgrades where appropriate.
+
+Do not automatically merge dependency updates without passing CI and required reviews.
+
+Add a dependency vulnerability audit.
+
+Pin critical tooling versions and document the update policy.
+
+Review dependency conflicts between the React and Python application environments.
+
+---
+
+# PART 15 — RELEASE AND DEPLOYMENT PIPELINE
+
+Create:
+
+`.github/workflows/deploy.yml`
+
+But only after confirming the real deployment target.
+
+The pipeline should:
+
+1. Run after the required CI checks.
+2. Build an immutable artifact.
+3. Attach version and commit metadata.
+4. Store deployment artifacts.
+5. Deploy to staging.
+6. Perform smoke tests.
+7. Wait for production approval if required.
+8. Deploy the same verified artifact to production.
+9. Run post-deployment checks.
+10. Support rollback to the previous release.
+
+Never rebuild a different artifact between staging and production.
+
+Do not invent deployment secrets or a deployment provider.
+
+If production deployment is not configured, create a documented, reusable deployment skeleton that is disabled until real environment details are supplied.
+
+Never deploy automatically from arbitrary feature branches.
+
+---
+
+# PART 16 — PULL REQUEST STANDARDS
+
+Create:
+
+`.github/pull_request_template.md`
+
+Every PR must document:
+
+- Feature or bug ID.
+- Description.
+- Why the change is required.
+- Scope.
+- Implementation summary.
+- Test coverage added.
+- Exact tests executed.
+- Acceptance criteria.
+- Screenshots or recordings where useful.
+- Security impact.
+- Backward compatibility.
+- Deployment considerations.
+- Rollback considerations.
+- Known limitations.
+
+Create:
+
+`CODEOWNERS`
+
+Assign sensitive areas to explicitly approved owners only. Do not invent maintainers or reviewers.
+
+Add a policy that test modifications must accompany the relevant implementation changes.
+
+A PR that changes application behaviour but adds no relevant tests must be reviewed as an exception rather than silently accepted.
+
+---
+
+# PART 17 — QUALITY AND RELEASE METRICS
+
+Establish transparent engineering metrics:
+
+- Test pass rate.
+- Critical workflow coverage.
+- Unit test coverage.
+- Branch coverage.
+- Number of open critical bugs.
+- Number of open high-priority bugs.
+- Dependency vulnerability status.
+- Build success rate.
+- CI execution duration.
+- Regression failure rate.
+- Media output validation rate.
+
+Initial coverage targets:
+
+- Minimum 80% line coverage on critical business logic where practical.
+- Higher coverage on validation and time-conversion utilities.
+- Tests for all critical product workflows.
+- Zero unresolved release-blocking defects.
+
+Do not manipulate tests just to reach numerical targets.
+
+Do not use coverage percentage as the only measure of test quality.
+
+---
+
+# PART 18 — DOCUMENTATION DELIVERABLES
+
+Create or update:
+
+```text
+engineering/
+├── README.md
+├── REPOSITORY_AUDIT.md
+├── FEATURE_CATALOG.md
+├── ARCHITECTURE.md
+├── DEVELOPMENT_GUIDE.md
+├── TEST_STRATEGY.md
+├── TEST_PLAN.md
+├── QUALITY_GATES.md
+├── THREAT_MODEL.md
+├── SECURITY_POLICY.md
+├── CI_CD_ARCHITECTURE.md
+├── BRANCH_PROTECTION_SETUP.md
+├── RELEASE_PROCESS.md
+├── ROLLBACK_PLAN.md
+├── TECHNICAL_DEBT.md
+└── features/
+```
+
+Also create where applicable:
+
+```text
+.github/
+├── workflows/
+│   ├── ci.yml
+│   ├── deploy.yml
+│   └── scheduled-security.yml
+├── dependabot.yml
+├── CODEOWNERS
+└── pull_request_template.md
+```
+
+And:
+
+- A committed, appropriate frontend lockfile.
+- A documented Python dependency locking strategy.
+- Local pre-commit configuration.
+- Automated test structure.
+- Coverage reports.
+- Testing scripts.
+
+Do not create unnecessary duplicate documentation.
+
+---
+
+# PART 19 — EXECUTION STRATEGY
+
+Work in the following order.
+
+## Phase A — Discover
+
+Inspect all source files and establish what the application really is.
+
+Deliver repository audit and feature catalog.
+
+## Phase B — Baseline
+
+Run existing build commands and available tests.
+
+Record actual failures and limitations.
+
+## Phase C — Prioritize
+
+Identify missing functionality and blockers.
+
+Produce a risk-based remediation backlog.
+
+## Phase D — Test infrastructure
+
+Build the automated test foundation.
+
+Begin with critical business logic and regression tests.
+
+## Phase E — Quality controls
+
+Implement formatting, lint, type checks, unit tests, integration tests, security scans and build validation.
+
+## Phase F — CI
+
+Implement GitHub Actions and ensure required jobs report correctly.
+
+## Phase G — Governance
+
+Set up local hooks, CODEOWNERS, pull request standards and branch-protection instructions.
+
+Only configure GitHub settings when authorized.
+
+## Phase H — CD
+
+Inspect the real deployment target, then build the staging and production release process.
+
+## Phase I — Verification
+
+Run every configured quality gate.
+
+Test failure scenarios to prove the pipeline blocks bad changes.
+
+Document the results.
+
+---
+
+# PART 20 — PIPELINE FAILURE TESTING
+
+A CI pipeline is not complete merely because it has produced a green run.
+
+You must prove that it blocks defective code.
+
+Perform controlled tests on a disposable branch:
+
+1. Introduce a deliberately failing unit test.
+2. Confirm that the unit-test job fails.
+3. Confirm that `quality-gate` fails.
+4. Confirm that the PR cannot merge under the configured repository rules.
+5. Restore the test.
+6. Introduce a deliberate type-check failure.
+7. Confirm the frontend or Python static check blocks CI as applicable.
+8. Introduce a deliberately invalid build configuration in isolation.
+9. Confirm the build job fails.
+10. Verify that the clean revision passes.
+
+For simulated failures, make temporary changes only in disposable test branches and restore them.
+
+Never inject intentionally defective code into main or production.
+
+Do not claim merge prevention until repository protection has actually been verified.
+
+---
+
+# PART 21 — STRICT ENGINEERING RULES
+
+1. Never commit secrets.
+2. Never use fake authentication.
+3. Never report fake AI results as real.
+4. Never simulate a completed export as genuine processing.
+5. Never merge failing code.
+6. Never bypass required CI gates.
+7. Never suppress test failures to achieve a green status.
+8. Never silently change production behaviour during a QA-only phase.
+9. Never remove functionality without a documented decision.
+10. Never claim a test passed unless it actually executed.
+11. Never invent deployment environments.
+12. Never invent credentials.
+13. Never write tests that merely assert that a component renders when the real business logic remains broken.
+14. Keep changes isolated and reviewable.
+15. Use least-privilege tokens and protected secrets.
+16. Keep CI suitable for ordinary development machines and affordable GitHub runners.
+
+For every completed task provide:
+
+- Files changed.
+- Reason for each change.
+- Commands executed.
+- Test results.
+- Failure scenarios tested.
+- Remaining limitations.
+- Commit or PR references, if actually created.
+
+---
+
+# FINAL ACCEPTANCE CRITERIA
+
+The engagement is complete only when:
+
+1. The actual repository architecture is documented.
+2. All discovered features are catalogued.
+3. Critical functional gaps have tests.
+4. Python quality checks run successfully where applicable.
+5. Frontend quality checks run successfully.
+6. Automated backend and frontend tests exist.
+7. Media processing is validated using real generated test files.
+8. CI runs on pull requests.
+9. A required quality-gate check exists.
+10. Local pre-commit controls are available.
+11. Branch protection has been enabled and verified, or the remaining administrator action is clearly documented.
+12. Controlled failures prove that the quality gate blocks bad code.
+13. Deployment is safe, or its missing configuration is documented.
+14. All results are evidence-backed.
+
+At the end produce:
+
+`engineering/FINAL_ENGINEERING_READINESS_REPORT.md`
+
+Provide a GO / NO-GO recommendation.
+
+Start now with Phase A: complete repository discovery.
+
+Do not skip the source inspection.
+
+Do not begin sweeping refactoring before reporting the initial findings.
+
+Do not claim the task is finished until the acceptance criteria have been verified.
